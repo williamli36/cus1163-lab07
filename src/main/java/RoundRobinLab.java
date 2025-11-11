@@ -21,49 +21,39 @@ public class RoundRobinLab {
 
     /**
      * TODO 1, 2, 3: Implement Round Robin Scheduling
-     *
-     * This method simulates Round Robin scheduling with the given time quantum.
-     *
-     * TODO 1: Create the ready queue and scheduling loop
-     *   - Create an ArrayList to hold the ready queue
-     *   - Add all processes to the ready queue initially
-     *   - Create a loop that continues while the queue is not empty
-     *
-     * TODO 2: Process execution logic
-     *   - Remove the first process from the queue
-     *   - Calculate how much time this process will run (minimum of quantum and remaining time)
-     *   - Update currentTime by adding the execution time
-     *   - Subtract execution time from the process's remainingTime
-     *   - If remainingTime > 0, add process back to the end of the queue
-     *   - If remainingTime == 0, set the process completionTime to currentTime
-     *
-     * TODO 3: Calculate metrics after all processes complete
-     *   - Loop through all processes
-     *   - For each process: turnaroundTime = completionTime - arrivalTime
-     *   - For each process: waitingTime = turnaroundTime - burstTime
      */
     public static void scheduleRoundRobin(List<Process> processes, int timeQuantum) {
         int currentTime = 0;
 
         // TODO 1: Create ready queue and add all processes
-
+        ArrayList<Process> readyQueue = new ArrayList<>();
+        for (Process p : processes) {
+            readyQueue.add(p);
+        }
 
         // TODO 2: Scheduling loop
-        // while (queue is not empty) {
-        //     - Remove first process
-        //     - Calculate execution time (min of quantum and remaining time)
-        //     - Update current time
-        //     - Decrease remaining time
-        //     - If not done, add back to queue
-        //     - If done, set completion time
-        // }
+        while (!readyQueue.isEmpty()) {
+            // Remove first process
+            Process current = readyQueue.remove(0);
+            
+            int executeTime = Math.min(timeQuantum, current.remainingTime);
 
+            currentTime += executeTime;
+            
+            current.remainingTime -= executeTime;
+
+            if (current.remainingTime > 0) {
+                readyQueue.add(current);
+            } else {
+                current.completionTime = currentTime;
+            }
+        }
 
         // TODO 3: Calculate turnaround and waiting times
-        // for each process:
-        //     turnaroundTime = completionTime - arrivalTime
-        //     waitingTime = turnaroundTime - burstTime
-
+        for (Process p : processes) {
+            p.turnaroundTime = p.completionTime - p.arrivalTime;
+            p.waitingTime = p.turnaroundTime - p.burstTime;
+        }
     }
 
     /**
